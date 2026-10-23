@@ -85,6 +85,10 @@ Run `karma update`. With Homebrew, run `brew upgrade karma`, then `karma update`
 **Where does it keep its files?**
 Its settings, session records, message history and logs are in `~/.karmayoga/karma`. The conversations stay where Claude Code and Codex keep them. `karma delete NAME` removes a stopped session's records and never touches its working directory.
 
+## Contact
+
+The website is [karmayoga.dev](https://karmayoga.dev). Send questions and bug reports to [hello@karmayoga.dev](mailto:hello@karmayoga.dev).
+
 ## License
 
 See [LICENSE.md](LICENSE.md).
