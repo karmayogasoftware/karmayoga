@@ -1,6 +1,6 @@
 # Karma Yoga CLI
 
-Run a fleet of long-running Claude Code and Codex agents from one terminal. A manager agent takes your task, briefs the agents, runs the build and review loop, and reports back.
+Run a fleet of persistent Claude Code and Codex agents in your terminal. Each session has a manager and many crew agents. The manager agent takes your task, briefs the agents, with a build and review loop, and reports back. 
 
 ![Karma Yoga session: manager pane on the left, agents on the right](docs/demo.gif)
 
@@ -74,20 +74,20 @@ karma new work
 ## FAQ
 
 **What accounts do I need?**
-You need Claude Code, Codex or both, signed in on your own accounts. A subscription, API billing or a provider such as Bedrock or Vertex all work. `karma init` offers to install a missing tool and to sign it in.
+You need either Claude Code, Codex or both, signed in on your own accounts. A subscription, API billing or a provider such as Bedrock or Vertex all are supported. `karma init` offers to install a missing tool and to sign it in.
 
 **Does it run on Linux and Windows?**
 It runs on macOS and on Linux for x86_64 and aarch64. On Windows it runs inside WSL2.
 
 **How do I update or uninstall it?**
-Run `karma update`. With Homebrew, run `brew upgrade karma`, then `karma update` to restart the sessions on it. Once every session is stopped, `karma uninstall` removes the binary and the service that keeps sessions running, and asks whether to delete your settings. With Homebrew it leaves the binary, and `brew uninstall karma` removes it.
+Run `karma update`. With Homebrew, run `brew upgrade karma`, then `karma update` to restart the sessions on it. Once every session is stopped, `karma uninstall` removes the binary and the service that keeps sessions running. With Homebrew `brew uninstall karma` also removes it.
 
 **Where does it keep its files?**
 Its settings, session records, message history and logs are in `~/.karmayoga/karma`. The conversations stay where Claude Code and Codex keep them. `karma delete NAME` removes a stopped session's records and never touches its working directory.
 
 ## Contact
 
-The website is [karmayoga.dev](https://karmayoga.dev). Send questions and bug reports to [hello@karmayoga.dev](mailto:hello@karmayoga.dev).
+Our website is [karmayoga.dev](https://karmayoga.dev). Please send questions and bug reports to [hello@karmayoga.dev](mailto:hello@karmayoga.dev).
 
 ## License
 
