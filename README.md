@@ -3,3 +3,51 @@
 Run a fleet of long-running Claude Code and Codex agents from one terminal. A manager agent takes your task, briefs the agents, runs the build and review loop, and reports back.
 
 ![Karma Yoga session: manager pane on the left, agents on the right](docs/demo.gif)
+
+## Install
+
+```sh
+curl -fsSL https://karmayoga.dev/install.sh | sh
+```
+
+Or use Homebrew with `brew install karmayogasoftware/tap/karma`. Both work on macOS and Linux. Each platform's archive and SHASUMS256.txt are on the [Releases](https://github.com/karmayogasoftware/karmayoga/releases) page. On Windows, install inside WSL2 with the Linux installer.
+
+## Quick start
+
+```sh
+karma init
+karma new work
+```
+
+`karma init` asks which tools you use, Claude Code, Codex or both, checks that each is installed and signed in, and asks for its default model and effort. If you skip it, `karma new` runs it first.
+
+`karma new work` asks for the session's working directory, then opens the session in your terminal. The manager is on the left, and you give it work by typing in its pane. The agents it runs, starting with `assistant`, are on the right. Ctrl-\ detaches and leaves the session running, and the bar at the bottom shows the other keys.
+
+## Everyday commands
+
+- `karma ls` lists every session, stopped ones too, with its state and its agents.
+- `karma open NAME` opens a session, and starts it first if it is stopped.
+- `karma stop NAME` stops a session. Its records and conversations stay.
+- `karma start NAME` starts a stopped session on the same conversations, without opening it.
+- `karma restart NAME` restarts every agent of a session, the manager too, on its conversation, and tells busy agents to continue. Use it when an agent is stuck, or to give the manager new settings. `--manager` or `--agent AGENT` restarts only that one.
+- `karma update` installs the latest release and restarts the running sessions on it.
+- `karma settings` lists the settings, and `karma settings set KEY VALUE` changes one. Agents other than the manager take a new tool setting once they are idle.
+- `karma models` lists the models each tool offers your account and the efforts each takes.
+
+## FAQ
+
+**What accounts do I need?**
+You need Claude Code, Codex or both, signed in on your own accounts. A subscription, API billing or a provider such as Bedrock or Vertex all work. `karma init` offers to install a missing tool and to sign it in.
+
+**Does it run on Linux and Windows?**
+It runs on macOS and on Linux for x86_64 and aarch64. On Windows it runs inside WSL2.
+
+**How do I update or uninstall it?**
+Run `karma update`. With Homebrew, run `brew upgrade karma`, then `karma update` to restart the sessions on it. Once every session is stopped, `karma uninstall` removes the binary and the service that keeps sessions running, and asks whether to delete your settings. With Homebrew it leaves the binary, and `brew uninstall karma` removes it.
+
+**Where does it keep its files?**
+Its settings, session records, message history and logs are in `~/.karmayoga/karma`. The conversations stay where Claude Code and Codex keep them. `karma delete NAME` removes a stopped session's records and never touches its working directory.
+
+## License
+
+See [LICENSE.md](LICENSE.md).
