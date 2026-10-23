@@ -80,7 +80,7 @@ You need either Claude Code, Codex or both, signed in on your own accounts. A su
 It runs on macOS and on Linux for x86_64 and aarch64. On Windows it runs inside WSL2.
 
 **How do I update or uninstall it?**
-Run `karma update`. With Homebrew, run `brew upgrade karma`, then `karma update` to restart the sessions on it. Once every session is stopped, `karma uninstall` removes the binary and the service that keeps sessions running. With Homebrew `brew uninstall karma` also removes it.
+Run `karma update`, which upgrades through Homebrew when Homebrew installed karma. Once every session is stopped, `karma uninstall` removes the binary and the service that keeps sessions running. With Homebrew it leaves the binary, and `brew uninstall karma` removes it.
 
 **Where does it keep its files?**
 Its settings, session records, message history and logs are in `~/.karmayoga/karma`. The conversations stay where Claude Code and Codex keep them. `karma delete NAME` removes a stopped session's records and never touches its working directory.
