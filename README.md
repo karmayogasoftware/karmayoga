@@ -6,11 +6,25 @@ Run a fleet of long-running Claude Code and Codex agents from one terminal. A ma
 
 ## Install
 
+### Install script (macOS and Linux)
+
 ```sh
 curl -fsSL https://karmayoga.dev/install.sh | sh
 ```
 
-Or use Homebrew with `brew install karmayogasoftware/tap/karma`. Both work on macOS and Linux. Each platform's archive and SHASUMS256.txt are on the [Releases](https://github.com/karmayogasoftware/karmayoga/releases) page. On Windows, install inside WSL2 with the Linux installer.
+### Homebrew (macOS and Linux)
+
+```sh
+brew install karmayogasoftware/tap/karma
+```
+
+### GitHub Releases
+
+Each platform's archive and SHASUMS256.txt are on the [Releases](https://github.com/karmayogasoftware/karmayoga/releases) page.
+
+### Windows
+
+Install inside WSL2 with the install script.
 
 ## Quick start
 
