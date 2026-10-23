@@ -18,9 +18,32 @@ curl -fsSL https://karmayoga.dev/install.sh | sh
 brew install karmayogasoftware/tap/karma
 ```
 
-### GitHub Releases
+### GitHub Releases (macOS and Linux)
 
-Each platform's archive and SHASUMS256.txt are on the [Releases](https://github.com/karmayogasoftware/karmayoga/releases) page.
+Each [release](https://github.com/karmayogasoftware/karmayoga/releases) has an archive for each platform and a SHASUMS256.txt. On macOS:
+
+```sh
+v=0.3.0
+curl -fLO https://github.com/karmayogasoftware/karmayoga/releases/download/v$v/karma-$v-macos-universal.tar.gz
+curl -fLO https://github.com/karmayogasoftware/karmayoga/releases/download/v$v/SHASUMS256.txt
+shasum -a 256 -c --ignore-missing SHASUMS256.txt
+tar -xzf karma-$v-macos-universal.tar.gz
+mkdir -p ~/.local/bin && mv karma ~/.local/bin/
+```
+
+On Linux, for x86_64 and aarch64:
+
+```sh
+v=0.3.0
+a=karma-$v-linux-$(uname -m).tar.gz
+curl -fLO https://github.com/karmayogasoftware/karmayoga/releases/download/v$v/$a
+curl -fLO https://github.com/karmayogasoftware/karmayoga/releases/download/v$v/SHASUMS256.txt
+sha256sum -c --ignore-missing SHASUMS256.txt
+tar -xzf $a
+mkdir -p ~/.local/bin && mv karma ~/.local/bin/
+```
+
+Make sure `~/.local/bin` is on your PATH.
 
 ### Windows
 
