@@ -1,4 +1,4 @@
-# Karma Yoga CLI
+# Karma Yoga CLI - Agent orchestration done right.
 
 Run a fleet of persistent Claude Code and Codex agents in your terminal. Each session has a manager and many crew agents. The manager agent takes your task, briefs the agents, with a build and review loop, and reports back. 
 
