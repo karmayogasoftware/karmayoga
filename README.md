@@ -18,7 +18,12 @@ curl -fsSL https://karmayoga.dev/install.sh | sh
 brew install karmayogasoftware/tap/karma
 ```
 
-### GitHub Releases (macOS and Linux)
+### Windows
+
+Install inside WSL2 with the install script.
+
+<details>
+<summary>Click here to see how to install directly from GitHub Releases</summary>
 
 Each [release](https://github.com/karmayogasoftware/karmayoga/releases) has an archive for each platform and a SHASUMS256.txt. On macOS:
 
@@ -45,20 +50,15 @@ mkdir -p ~/.local/bin && mv karma ~/.local/bin/
 
 Make sure `~/.local/bin` is on your PATH.
 
-### Windows
-
-Install inside WSL2 with the install script.
+</details>
 
 ## Quick start
 
 ```sh
 karma
-karma new work
 ```
 
-On its first run, `karma` asks which tools you use, Claude Code, Codex or both, checks that each is installed and signed in, and asks for its default model and effort. Press any key at Ready to open your sessions. `karma init` opens the same first run on a fresh install and reviews your settings once setup is finished. If you skip setup, `karma new` runs it first.
-
-`karma new work` asks for the session's working directory, then opens the session in your terminal. The manager is on the left, and you give it work by typing in its pane. The agents it runs, starting with `assistant`, are on the right. Ctrl-\ detaches and leaves the session running, and the bar at the bottom shows the other keys.
+The first time you run `karma`, it sets up Claude Code, Codex or both, then shows your sessions. Pick `+ New session`, give it a name and a working directory, and it starts a session with two agents: the manager on the left and an assistant on the right. Give the manager work by typing in its pane, and ask it to start more agents when you need them. Ctrl-\ detaches and leaves the session running, and the bar at the bottom shows the other keys.
 
 ## Everyday commands
 
