@@ -52,11 +52,11 @@ Install inside WSL2 with the install script.
 ## Quick start
 
 ```sh
-karma init
+karma
 karma new work
 ```
 
-`karma init` asks which tools you use, Claude Code, Codex or both, checks that each is installed and signed in, and asks for its default model and effort. If you skip it, `karma new` runs it first.
+On its first run, `karma` asks which tools you use, Claude Code, Codex or both, checks that each is installed and signed in, and asks for its default model and effort. Press any key at Ready to open your sessions. `karma init` opens the same first run on a fresh install and reviews your settings once setup is finished. If you skip setup, `karma new` runs it first.
 
 `karma new work` asks for the session's working directory, then opens the session in your terminal. The manager is on the left, and you give it work by typing in its pane. The agents it runs, starting with `assistant`, are on the right. Ctrl-\ detaches and leaves the session running, and the bar at the bottom shows the other keys.
 
@@ -74,7 +74,7 @@ karma new work
 ## FAQ
 
 **What accounts do I need?**
-You need either Claude Code, Codex or both, signed in on your own accounts. A subscription, API billing or a provider such as Bedrock or Vertex all are supported. `karma init` offers to install a missing tool and to sign it in.
+You need either Claude Code, Codex or both, signed in on your own accounts. A subscription, API billing or a provider such as Bedrock or Vertex all are supported. Setup offers to install a missing tool with its official installer and to sign it in. `karma doctor --fix` uses the same installers, `https://claude.ai/install.sh` for Claude Code and `https://chatgpt.com/codex/install.sh` for Codex, with commands in `~/.local/bin` by default. `karma doctor reset` resets settings and leaves the tools installed.
 
 **Does it run on Linux and Windows?**
 It runs on macOS and on Linux for x86_64 and aarch64. On Windows it runs inside WSL2.
