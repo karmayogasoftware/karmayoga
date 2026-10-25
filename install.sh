@@ -4,14 +4,12 @@ fail() {
     [ -n "$n" ] || { printf '%s✗%s %s\n' "$red" "$reset" "$1" >&2; exit 1; }
     stop; show "${red}✗${reset}" "$1"; exit 1
 }
-usage='Usage: curl -fsSL https://karmayoga.dev/install.sh | sh -s -- [--debug] [--dev], or KARMA_DEBUG=1 for the debug build.'
+usage='Usage: curl -fsSL https://karmayoga.dev/install.sh | sh -s -- [--dev]'
 releases=https://get.karmayoga.dev
 suffix=
 init=karma
-if [ "${KARMA_DEBUG:-}" = 1 ]; then suffix=-debug; fi
 for arg in "$@"; do
     case "$arg" in
-        --debug) suffix=-debug ;;
         --dev) releases=https://dev.karmayoga.dev; suffix=-debug ;;
         -h|--help) echo "$usage"; exit 0 ;;
         *) echo "$usage" >&2; exit 1 ;;
