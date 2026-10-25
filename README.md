@@ -28,7 +28,7 @@ Install inside WSL2 with the install script.
 Each [release](https://github.com/karmayogasoftware/karmayoga/releases) has an archive for each platform and a SHASUMS256.txt. On macOS:
 
 ```sh
-v=0.3.0
+v=0.3.1
 curl -fLO https://github.com/karmayogasoftware/karmayoga/releases/download/v$v/karma-$v-macos-universal.tar.gz
 curl -fLO https://github.com/karmayogasoftware/karmayoga/releases/download/v$v/SHASUMS256.txt
 shasum -a 256 -c --ignore-missing SHASUMS256.txt
@@ -39,7 +39,7 @@ mkdir -p ~/.local/bin && mv karma ~/.local/bin/
 On Linux, for x86_64 and aarch64:
 
 ```sh
-v=0.3.0
+v=0.3.1
 a=karma-$v-linux-$(uname -m).tar.gz
 curl -fLO https://github.com/karmayogasoftware/karmayoga/releases/download/v$v/$a
 curl -fLO https://github.com/karmayogasoftware/karmayoga/releases/download/v$v/SHASUMS256.txt
