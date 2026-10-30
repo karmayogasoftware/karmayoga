@@ -7,7 +7,7 @@ fail() {
 usage='Usage: curl -fsSL https://karmayoga.dev/install.sh | sh -s -- [--dev]'
 releases=https://get.karmayoga.dev
 suffix=
-init=karma
+init='karma init'
 for arg in "$@"; do
     case "$arg" in
         --dev) releases=https://dev.karmayoga.dev; suffix=-debug ;;
@@ -82,7 +82,7 @@ dest=${KARMA_INSTALL_DIR:-$HOME/.local/bin}
 work=$(mktemp -d)
 trap 'stop; rm -rf "$work"' EXIT
 trap 'exit 1' HUP INT TERM
-curl -fsL "$base/latest" -o "$work/latest" || fail 'Could not read the Karma Yoga CLI release version.'
+curl -fsL "$base/latest" -o "$work/latest" || fail 'Could not reach the Karma Yoga CLI releases. Check your internet connection, then try again.'
 version=$(cat "$work/latest")
 case "$version" in ''|.*|*[!a-zA-Z0-9.-]*) fail 'The Karma Yoga CLI release version is invalid.' ;; esac
 first='' total=5 doing='Updating to' finished=Updated
@@ -213,9 +213,9 @@ if [ -n "$path" ]; then
             init="source $rc, then $init"
         fi
     else
-        printf '%s%s%s\nAdd this line to your shell profile too.\n' "$bold" "$line" "$reset"
+        printf 'Add %s%s%s to your shell profile.\n' "$bold" "$line" "$reset"
         # Without a PATH line, run karma by its path, quoted when the path needs it.
         case "$shown" in *[!A-Za-z0-9_./~+-]*) init="\"$path_dir/karma\"${init#karma}" ;; *) init=$shown/$init ;; esac
     fi
 fi
-if [ -n "$first" ]; then printf 'Run %s%s%s to set up your tools.\n' "$bold" "$init" "$reset"; fi
+if [ -n "$first" ]; then printf 'Run %s%s%s to set up your tools\n' "$bold" "$init" "$reset"; fi
