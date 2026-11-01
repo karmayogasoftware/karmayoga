@@ -218,4 +218,4 @@ if [ -n "$path" ]; then
         case "$shown" in *[!A-Za-z0-9_./~+-]*) init="\"$path_dir/karma\"${init#karma}" ;; *) init=$shown/$init ;; esac
     fi
 fi
-if [ -n "$first" ]; then printf 'Run %s%s%s to set up your tools\n' "$bold" "$init" "$reset"; fi
+if [ -n "$first" ]; then printf 'Run %s%s%s to set up your agents with Karma Yoga CLI\n' "$bold" "$init" "$reset"; fi
