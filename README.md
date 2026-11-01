@@ -6,6 +6,18 @@ Run a fleet of persistent Claude Code and Codex agents in your terminal. Each se
 
 ## Install
 
+The recommended install is with your agent. Paste this prompt into Claude Code, Codex or any agent of your choice.
+
+```text
+Go to karmayoga.dev/agent, install the Karma Yoga CLI and follow the steps to open inside a Karma Yoga session.
+```
+
+In Codex, first type `/permissions` and choose Full Access, because Codex blocks network access by default.
+
+When your agent finishes, open a new terminal and run the `karma open` command it gives you.
+
+To install by hand instead, use one of the methods below.
+
 ### Install script (macOS and Linux)
 
 ```sh
@@ -20,7 +32,7 @@ brew install karmayogasoftware/tap/karma
 
 ### Windows
 
-Install inside WSL2 with the install script.
+Open PowerShell as administrator, run `wsl --install` and restart your computer. Open Ubuntu from the Start menu, choose a username and password, then run the install script inside Ubuntu.
 
 <details>
 <summary>Click here to see how to install directly from GitHub Releases</summary>
@@ -28,7 +40,7 @@ Install inside WSL2 with the install script.
 Each [release](https://github.com/karmayogasoftware/karmayoga/releases) has an archive for each platform and a SHASUMS256.txt. On macOS:
 
 ```sh
-v=0.3.1
+v=0.3.3
 curl -fLO https://github.com/karmayogasoftware/karmayoga/releases/download/v$v/karma-$v-macos-universal.tar.gz
 curl -fLO https://github.com/karmayogasoftware/karmayoga/releases/download/v$v/SHASUMS256.txt
 shasum -a 256 -c --ignore-missing SHASUMS256.txt
@@ -39,7 +51,7 @@ mkdir -p ~/.local/bin && mv karma ~/.local/bin/
 On Linux, for x86_64 and aarch64:
 
 ```sh
-v=0.3.1
+v=0.3.3
 a=karma-$v-linux-$(uname -m).tar.gz
 curl -fLO https://github.com/karmayogasoftware/karmayoga/releases/download/v$v/$a
 curl -fLO https://github.com/karmayogasoftware/karmayoga/releases/download/v$v/SHASUMS256.txt
@@ -54,11 +66,17 @@ Make sure `~/.local/bin` is on your PATH.
 
 ## Quick start
 
+If your agent installed Karma Yoga CLI, your session is ready, so skip to the last command. By hand, install a tool, sign in, set up and start a session. Use `codex` for Codex, and `--tools both` for both.
+
 ```sh
-karma
+karma doctor install claude
+karma auth login claude
+karma init --tools claude
+karma new demo --default-dir
+karma open demo
 ```
 
-The first time you run `karma`, it sets up Claude Code, Codex or both, then shows your sessions. Pick `+ New session`, give it a name and a working directory, and it starts a session with two agents: the manager on the left and an assistant on the right. Give the manager work by typing in its pane, and ask it to start more agents when you need them. Ctrl-\ detaches and leaves the session running, and the bar at the bottom shows the other keys.
+The session starts with two agents: the manager on the left and an assistant on the right. Give the manager work by typing in its pane, and ask it to start more agents when you need them. Ctrl-\ detaches and leaves the session running, and the bar at the bottom shows the other keys. After setup, `karma` opens the menu.
 
 ## Everyday commands
 
@@ -74,7 +92,7 @@ The first time you run `karma`, it sets up Claude Code, Codex or both, then show
 ## FAQ
 
 **What accounts do I need?**
-You need either Claude Code, Codex or both, signed in on your own accounts. A subscription, API billing or a provider such as Bedrock or Vertex all are supported. Setup offers to install a missing tool with its official installer and to sign it in. `karma doctor --fix` uses the same installers, `https://claude.ai/install.sh` for Claude Code and `https://chatgpt.com/codex/install.sh` for Codex, with commands in `~/.local/bin` by default. `karma doctor reset` resets settings and leaves the tools installed.
+You need either Claude Code, Codex or both, signed in on your own accounts. A subscription, API billing or a provider such as Bedrock or Vertex all are supported. `karma doctor install TOOL` installs a missing tool with its official installer and `karma auth login TOOL` signs it in. `karma doctor --fix` uses the same installers, `https://claude.ai/install.sh` for Claude Code and `https://chatgpt.com/codex/install.sh` for Codex, with commands in `~/.local/bin` by default. `karma doctor reset` resets settings and leaves the tools installed.
 
 **Does it run on Linux and Windows?**
 It runs on macOS and on Linux for x86_64 and aarch64. On Windows it runs inside WSL2.
