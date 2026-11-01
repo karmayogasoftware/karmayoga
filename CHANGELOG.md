@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.3.4
+
+- `karma tasks` moves from one list per session to named projects, each with its own id prefix. A
+  task has a managing session, a manager can take it for its session, and it can be handed over.
+  Outside a session, `karma tasks ls` is the one task command, and only a manager closes a task.
+- `karma tasks` needs a project first: `karma tasks project create NAME --prefix P`. Tasks from
+  before this release stay in their old session stores until you run `karma tasks migrate SESSION`
+  for each session. `show` and `search` still find a task by its old id; a command that changes a
+  task refuses an old id and names the current one.
+- A `/model` change now stays with that agent across restarts. New agents still start on the
+  configured model.
+- A restart or update stays silent for a session only when the manager and all its agents have been
+  idle for at least an hour.
+- `karma ls` shows when each session was last active.
+- A new manager follows its skill from the first message instead of being told to ask you.
+- `karma browser` matches agent-browser more closely across launch, tabs, uploads, frames, dialogs,
+  screenshots and rate limits.
+
 ## 0.3.3
 
 Init:
