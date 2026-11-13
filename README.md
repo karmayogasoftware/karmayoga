@@ -74,7 +74,7 @@ Press Ctrl-\ to detach, or close the terminal, and the work keeps going. `karma 
 - `karma ls` lists your sessions and their agents. `--all` adds archived ones.
 - `karma open NAME` goes into a session, and starts it first if it is stopped.
 - `karma stop NAME` stops a session. Its conversations stay, and `karma start NAME` starts it again without going in.
-- `karma pause NAME` pauses an idle session and keeps its screen, so opening it again is instant. `karma archive NAME` stops it and hides it from `karma ls`.
+- `karma pause NAME` pauses an idle session and keeps its conversations and a saved screen, which is shown while the session starts again. `karma archive NAME` stops it and hides it from `karma ls`.
 - `karma restart NAME` restarts every agent of a session on its conversation.
 - `karma usage` shows your account limits, when they reset and what each agent used. `karma machine` shows CPU, memory and disk.
 - `karma plugins list` shows the plugins you can install, such as tasks. A new setup starts with none.
@@ -100,7 +100,7 @@ In `~/.karmayoga`. The conversations stay where Claude Code, Codex and Pi keep t
 
 ## Contact
 
-Our website is [getkarmayoga.com](https://getkarmayoga.com). Please send questions and bug reports to [hello@getkarmayoga.com](mailto:hello@getkarmayoga.com), or run `karma feedback`.
+Our website is [getkarmayoga.com](https://getkarmayoga.com). Please send questions and bug reports to [hello@getkarmayoga.com](mailto:hello@getkarmayoga.com), or run `karma feedback --text "What went wrong"`.
 
 ## License
 
