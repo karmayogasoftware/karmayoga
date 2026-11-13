@@ -1,5 +1,151 @@
 # Changelog
 
+## 0.4.0
+
+- Pi is a third agent tool beside Claude Code and Codex, for managers and agents. `karma tools
+  install pi` runs Pi's official installer, which needs Node.js 22.19 or newer and npm.
+- A first `karma init` sets Pi up with the other tools when Pi is installed and signed in to a
+  model provider. On a computer set up before 0.4.0 a plain `karma init` does the same. A Pi that
+  is turned off stays off until `karma tools enable pi` passes.
+- Pi runs with bypass permissions: it has no per-tool approval or sandbox, and karma trusts the
+  project folder for each Pi session only.
+- A session that stays idle is paused by itself and continues where it was when you open it.
+  `karma archive NAME` stops a session and hides it from `karma ls`; `karma ls --all` shows it.
+- `karma pause NAME` pauses a session by hand as the idle auto pause does, and a manager may pause
+  its own session.
+- An idle agent is parked and wakes when it is told something. A parked agent keeps its
+  conversation and shows its last saved output.
+- Switching away from a session shows your paused sessions with how long ago each was paused and
+  the keys that open one or leave the screen. Stopped sessions are not listed there. When no session
+  is paused, the screen is skipped: switching goes straight to the next session, and leaving a linked
+  session that no longer exists returns you to your last session or to the shell with the reason.
+- Opening a paused or stopped session in a terminal starts it at once behind its saved screen and
+  shows a progress line. Enter retries a start that failed, and the detach key or Ctrl+C leaves
+  while the session keeps starting.
+- Keys typed while a session is opening no longer show up as stray characters on the terminal.
+- `karma ls` lists running sessions first, then paused, then stopped, each by last activity.
+  `karma agents` shows when each agent was last active.
+- `karma agents` lists the agents, for people, managers and agents alike. `karma agent ls` still
+  runs for scripts that call it, and no help shows it.
+- `karma plugins` replaces `karma experimental`. `karma plugins` lists what karma can do beyond
+  sessions and agents, `karma plugins search TEXT` finds one, and a person installs or removes one
+  with `karma plugins install NAME` and `karma plugins uninstall NAME`. A manager does it only when
+  the person said yes, and passes `--human-approved` to say so; other agents cannot. Each plugin
+  shows whether it is alpha or beta; one with no mark is complete. What you had turned on in 0.3.4
+  stays installed.
+- `karma tasks` is a plugin. A new setup has no plugin installed, tasks included. An update from
+  0.3.4 keeps tasks installed.
+- New alpha plugins: `events` (agent and task events with attention notifications), `vdisplay`,
+  `social`, `video`, `email`, `slack`, `calendar` and `whatsapp`.
+- The `audio` plugin shows a meetings item in the bar. A click turns meetings on or off, or
+  cancels the model preparation while it runs.
+- Meetings transcribe with the English only model `whisper.small.en.q8` unless `meetings.model` or
+  `dictate.model` is set. Once it is ready, `karma audio on` deletes the multilingual
+  `ggml-small.bin` from 0.3.4, and so does `karma audio repair` once `on` has upgraded the
+  recorder. For calls in other languages, run
+  `karma settings set meetings.model whisper.small`.
+- `karma tools` installs, signs in and tests Claude Code, Codex and Pi (`karma tools install`,
+  `login`, `enable`, `disable`). `enable` tests the tool's agents and turns the tool on when they
+  answer, and `disable` turns it off. `karma doctor` only diagnoses and names the command that
+  fixes each row.
+- Once karma is set up, `karma init` and `karma tools enable TOOL` never turn off a tool that is
+  enabled. A check that fails says why and points to `karma doctor`, and `karma init --tools`
+  turns off no tool it leaves out.
+- `karma doctor` shows only the settings you changed, and `karma settings ls` shows all of them.
+  A tool that offers more than 10 models shows its default and the command that lists them.
+- `karma settings` with nothing after it opens the settings screen in a terminal outside a session.
+  `karma settings ls` lists every setting.
+- `karma update` runs from any terminal or agent, keeps sessions running when the new build can
+  work with the running one, and shows "updating" in the session bar instead of a dialog. The bar
+  shows "(update)" when a newer build exists; clicking it asks once in a popup and then shows
+  "updating karma".
+- If the session server is killed while sessions should be running, it is started again with them.
+  A karma home no longer replaces the running server of another karma home.
+- A session that failed to restore is recovered by the next update, and opening a session works
+  even when its layout cannot be set up.
+- A terminal that another terminal takes over stays open with a notice and can reattach.
+- A tell that follows an interrupted one is delivered even when the earlier message can no longer
+  be checked.
+- `karma crew tell @all` leaves parked agents out.
+- `karma crew tell --key` no longer takes `BTab`, and a `--key` or `--type` that starts with `[` is
+  refused.
+- From a manager, `karma crew tell --raw` needs an empty message box and takes plain text or a
+  slash command the tool lists, so `--raw /goal` is refused and `karma agent goal` remains.
+  A manager's `--key` and `--type` reach only a blocking prompt, apart from `--key Escape`, which
+  goes to any screen.
+- `karma new` lets the terminal in once the panes are up and starts the workers beside the manager.
+  It does not wait for the sign-in check of a tool found signed in less than 15 minutes ago, so a
+  tool signed out since then can start with a warning instead of being refused. In a terminal,
+  `karma new` now opens the session once its panes are up, so `--open` is no longer needed;
+  `karma new -d` or `--detach` creates it without opening it, and a script run in a terminal needs
+  `--detach`. The terminal goes in before the agents finish starting: an agent that fails to start
+  shows on the session bar, and the failure and any late sign-in warning are printed again when you
+  leave.
+- `KARMA_SPEEDUP_OFF` set to any value, or a file named `speedup-off` in the karma home for the
+  whole machine, puts back the path karma took before each speedup of this release: the in-process
+  kmux client, the late sign-in checks, the workers starting beside the manager, the versions kept on
+  disk and the early terminal.
+- Agents compact at `agents.auto_compact_tokens`, default 200000, and the manager at
+  `agents.manager_auto_compact_tokens`, default 300000. karma passes them at launch,
+  where it wins over your own Codex or Claude Code setting, so an agent you had set to compact
+  earlier now compacts later. 0 passes nothing and keeps each tool's own setting.
+- `karma init` on a home that is already set up no longer starts a test agent for a tool that
+  answered before and has not changed since: the same karma version, executable, tool version and
+  sign-in. `karma tools enable NAME` and `karma init --tools NAME` still test it.
+- `karma init` ends by naming the supported tools that are not set up and points to `karma tools`
+  for them. It no longer warns about a signed out tool before it starts.
+- `karma --licenses` prints the licences of the third party software built into karma. It works
+  offline and before setup.
+- A new session sends `/rename` only to a Claude Code manager. A Codex or Pi manager starts without
+  it, so its first message arrives sooner.
+- `karma agent goal NAME` reads a Claude agent's goal after its acknowledgement has scrolled away.
+- An agent start on macOS that finds the pty table full for a moment, as happens while another
+  terminal closes, is retried instead of failing with "open /dev/ptmx: Device not configured".
+- Settings that a release removed, starting with the old coffee settings, are cleaned out of
+  config.toml by `karma update`, and commands no longer print a warning for each of them.
+- The karma safety guard is removed, together with its setting `features.safety_guard`. karma no
+  longer checks the shell commands of an agent that runs in bypass. `karma update` cleans the
+  setting out of config.toml. Session hooks of your own keep working.
+- `karma update` moves the list of turned on features that 0.3.4 kept in `features.experimental`
+  to `plugins.installed`.
+- Changing an agent's model or effort, or restarting it, several times in a row no longer stops
+  the agent. An agent that the session server stopped restarting after it crashed several times
+  can be started again with `karma agent restart`, or parked with `karma agent deactivate` and
+  started later with `karma agent reactivate`. Either way it keeps its conversation.
+- When `karma agent restart` fails because Codex refuses a setting, the error shows Codex's own
+  reason.
+- `karma new --manager codex --manager-conversation ID` starts a session whose manager continues
+  an existing Codex conversation, as it already could with Claude Code.
+- When your Codex home keeps its sign-in in an `auth.json` file, new Codex agents run in a Codex
+  home of karma's own under `KARMA_HOME/.codex`, with your sign-in, settings, skills and hooks
+  linked in, so their threads are not in the ChatGPT app or your `codex resume` list.
+- `karma new --copy-writer TOOL` picks the copy-writer's tool, as `--builder` and `--reviewer` do
+  for theirs.
+- `karma browser` reaches buttons, fields and file inputs inside open shadow roots.
+- Claude Code agents no longer stop at "Teach auto mode about your environment?". karma turns off
+  Claude Code's auto-mode-setup skill for its agents, so the dialog never shows and
+  `/auto-mode-setup` is not offered inside karma agents. Karma Yoga is tested with Claude Code up
+  to 2.1.322.
+- `karma coffee` keeps the Mac awake only while it is on a charger.
+- `karma code-quality` checks Rust sources and brings its own skill.
+- Granting write access needs a person at a terminal.
+- In a terminal, `karma new` lists the files in the folder that run programs when an agent starts,
+  such as the project's own settings, hooks, MCP servers and extensions, and asks "Trust this
+  folder?". "No, start without them" starts the session's agents without them, and
+  `karma new --no-project-code` chooses that without the question. The session keeps the choice
+  for agents created later. Only a person is asked. A Yes is remembered for the folder until
+  what it would run changes.
+- Only a person changes a tool's permission mode. `karma settings set TOOL.permissions` works at a
+  terminal outside karma sessions or from the Mac app, and is refused for a manager or an agent.
+- From a manager, `karma agent config` and `karma agent create --config` refuse the Claude Code and
+  Codex settings that change what an agent may do without asking: permissions, sandbox, profiles,
+  hooks and plugins. A person sets them at a terminal outside karma sessions.
+- `karma kmux` is new: it runs one reading command on karma's session server. It is for a manager,
+  on its own session, and agents are refused.
+- `karma feedback` sends only with `--text`.
+- macOS downloads are separate arm64 and x86_64 binaries.
+- Downloads, updates and feedback moved to getkarmayoga.com.
+
 ## 0.3.4
 
 - `karma tasks` moves from one list per session to named projects, each with its own id prefix. A
