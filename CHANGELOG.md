@@ -9,12 +9,13 @@
   is turned off stays off until `karma tools enable pi` passes.
 - Pi runs with bypass permissions: it has no per-tool approval or sandbox, and karma trusts the
   project folder for each Pi session only.
-- A session that stays idle is paused by itself and continues where it was when you open it.
+- With `sessions.auto_pause` turned on, a session that stays idle is paused by itself and continues
+  where it was when you open it. It is off by default.
   `karma archive NAME` stops a session and hides it from `karma ls`; `karma ls --all` shows it.
 - `karma pause NAME` pauses a session by hand as the idle auto pause does, and a manager may pause
   its own session.
-- An idle agent is parked and wakes when it is told something. A parked agent keeps its
-  conversation and shows its last saved output.
+- With `agents.auto_park` turned on, an idle agent is parked and wakes when it is told something.
+  It is off by default. A parked agent keeps its conversation and shows its last saved output.
 - Switching away from a session shows your paused sessions with how long ago each was paused and
   the keys that open one or leave the screen. Stopped sessions are not listed there. When no session
   is paused, the screen is skipped: switching goes straight to the next session, and leaving a linked
