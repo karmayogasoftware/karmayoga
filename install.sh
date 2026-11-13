@@ -4,17 +4,48 @@ fail() {
     [ -n "$n" ] || { printf '%s✗%s %s\n' "$red" "$reset" "$1" >&2; exit 1; }
     stop; show "${red}✗${reset}" "$1"; exit 1
 }
-usage='Usage: curl -fsSL https://karmayoga.dev/install.sh | sh -s -- [--dev]'
-releases=https://get.karmayoga.dev
+# Finder launches without the installer's environment; leave the actual location for the app.
+record_binary() {
+    receipt_dir=$HOME/.karmayoga/karma
+    receipt=
+    if ! { mkdir -p "$receipt_dir" && receipt=$(mktemp "$receipt_dir/.installed-binary.XXXXXX") &&
+        printf '%s\n' "$1" > "$receipt" && mv -f "$receipt" "$receipt_dir/installed-binary"; }; then
+        [ -z "$receipt" ] || rm -f "$receipt" || :
+        printf '%s\n' 'Warning: the Karma Yoga CLI location could not be recorded. The app will try its standard binary paths.' >&2
+    fi
+}
+usage='Usage: curl -fsSL https://getkarmayoga.com/install.sh | sh -s -- [--dev]'
+releases=https://get.getkarmayoga.com
 suffix=
 init='karma init'
 for arg in "$@"; do
     case "$arg" in
-        --dev) releases=https://dev.karmayoga.dev; suffix=-debug ;;
+        --dev) releases=https://dev.getkarmayoga.com; suffix=-debug ;;
         -h|--help) echo "$usage"; exit 0 ;;
         *) echo "$usage" >&2; exit 1 ;;
     esac
 done
+# A session install updates its running CLI through the server, which owns the restart and log.
+# Record the launch path before exec: a server restart can end this shell.
+# Even if update refuses or fails, the receipt names the CLI this shell runs.
+# Keep the CLI's role check, including its refusal for crew agents.
+if [ -n "${KARMA_SESSION_ID:-}" ] && [ -n "${KMUX:-}" ] && [ -n "${TMUX_PANE:-}" ]; then
+    cli=$(command -v karma) || cli=
+    [ -x "$cli" ] || cli=${KARMA_INSTALL_DIR:-$HOME/.local/bin}/karma
+    if [ -f "$cli" ] && [ -x "$cli" ] && "$cli" crew status --json >/dev/null 2>&1; then
+        resolved=$cli
+        while [ -L "$resolved" ]; do
+            link=$(readlink "$resolved") || break
+            case "$link" in /*) resolved=$link ;; *) resolved=$(dirname "$resolved")/$link ;; esac
+        done
+        resolved=$(CDPATH= cd -P -- "$(dirname "$resolved")" && pwd)/$(basename "$resolved")
+        case "$suffix:$resolved" in
+            -debug:*/Cellar/karma/*/bin/karma) ;; # The installer makes a separate dev install.
+            *) record_binary "$(CDPATH= cd -- "$(dirname "$cli")" && pwd)/karma"
+               exec "$cli" update "$@" --yes ;;
+        esac
+    fi
+fi
 # On a terminal each step pulses in place until it is done; elsewhere it is one plain line once done.
 tty='' clear='' green='' red='' bold='' dim='' orange='' reset=''
 if [ -t 1 ] && [ -z "${NO_COLOR:-}" ]; then
@@ -91,8 +122,13 @@ printf '%s◆%s  %sKarma Yoga CLI%s\n   %s%s %s%s\n\n' "$orange" "$reset" "$bold
 begin 1 'Check platform'
 case "$(uname -s)" in
     Darwin)
-        platform=macos arch=universal about='macOS · Intel'
-        [ "$(uname -m)" != arm64 ] || about='macOS · Apple Silicon' ;;
+        platform=macos
+        case "$(uname -m)" in
+            arm64) arch=arm64 about='macOS · Apple Silicon' ;;
+            x86_64) arch=x86_64 about='macOS · Intel' ;;
+            *) fail 'Karma Yoga CLI supports macOS on arm64 and x86_64.' ;;
+        esac
+        ;;
     Linux)
         platform=linux
         case "$(uname -m)" in
@@ -104,13 +140,14 @@ case "$(uname -s)" in
     MINGW*|MSYS*|CYGWIN*) fail 'On Windows, install Karma Yoga CLI inside WSL2 using the Linux installer.' ;;
     *) fail 'Karma Yoga CLI supports macOS and Linux. On Windows, install it inside WSL2.' ;;
 esac
-[ "$releases" != https://dev.karmayoga.dev ] || [ "$platform" = macos ] || fail 'Karma Yoga CLI dev builds are available on macOS only.'
+[ "$releases" != https://dev.getkarmayoga.com ] || [ "$platform" = macos ] || fail 'Karma Yoga CLI dev builds are available on macOS only.'
 tick "$about"
 begin 2 'Download release' progress
 name="karma-$version-$platform-$arch$suffix.tar.gz"
 if ! fetch "$name"; then
-    [ "$platform" = macos ] && [ "$(uname -m)" = x86_64 ] || fail 'Could not download Karma Yoga CLI.'
-    name="karma-$version-macos-x86_64$suffix.tar.gz"
+    [ "$platform" = macos ] && [ "$arch" != universal ] || fail 'Could not download Karma Yoga CLI.'
+    # Older releases have only a universal archive.
+    name="karma-$version-macos-universal$suffix.tar.gz"
     fetch "$name" || fail 'Could not download Karma Yoga CLI.'
 fi
 tick "$(megabytes "$(size "$work/archive")") MB"
@@ -124,7 +161,7 @@ if command -v sha256sum >/dev/null 2>&1; then
 else
     actual=$(shasum -a 256 "$work/archive")
 fi
-[ "${actual%% *}" = "$digest" ] || fail 'The Karma Yoga CLI download failed its checksum check. Run the installer again. If it happens again, contact hello@karmayoga.dev.'
+[ "${actual%% *}" = "$digest" ] || fail 'The Karma Yoga CLI download failed its checksum check. Run the installer again. If it happens again, contact hello@getkarmayoga.com.'
 [ "$(tar -tzf "$work/archive" 2>/dev/null)" = karma ] || fail 'The Karma Yoga CLI release archive is invalid.'
 tar -xzf "$work/archive" -C "$work" 2>/dev/null || fail 'Could not extract Karma Yoga CLI.'
 [ -f "$work/karma" ] && [ ! -L "$work/karma" ] || fail 'The Karma Yoga CLI release binary is invalid.'
@@ -134,15 +171,13 @@ physical_home=$(cd "$HOME" 2>/dev/null && pwd -P) || physical_home=$HOME
 for display_home in "$HOME" "$physical_home"; do
     case "$dest" in "$display_home"|"$display_home"/*) shown="~${dest#"$display_home"}"; break ;; esac
 done
-# Karma writes itself beside the old binary and renames it over it. When the session server runs, it
-# restarts it on the new binary so every agent comes back on its conversation, saying so on stderr
-# as it starts and naming each session as it restarts it, and while any agent is busy it refuses,
-# changing nothing.
+# Karma replaces the executable and watcher, keeping a compatible session server running. Otherwise
+# it restarts sessions on their conversations, reporting progress on stderr.
 detail="$shown/karma" after='Restart sessions'
 [ -n "$first" ] || boundary='Restarting [0-9][0-9]* sessions*'
 begin 4 'Install executable' restarting
 [ ! -d "$dest/karma" ] || fail 'The Karma Yoga CLI install path is a directory.'
-if ! "$work/karma" update --install "$dest/karma" --json > "$work/out" 2> "$work/err"; then
+if ! KARMA_INSTALL_NOTICE_FD=3 "$work/karma" update --install "$dest/karma" --json 3>&1 > "$work/out" 2> "$work/err"; then
     stop
     # karma's error as it gave it, unwrapped from its JSON, after a sentence naming the product.
     error=$(tail -n 1 "$work/err" | sed 's/^{"error":"\(.*\)"}$/\1/; s/\\"/"/g; s/\\\\/\\/g; s/\.$//')
@@ -151,10 +186,21 @@ if ! "$work/karma" update --install "$dest/karma" --json > "$work/out" 2> "$work
     fail "Karma Yoga CLI was installed, but restarting its sessions failed. $error."
 fi
 stop
+installed_dir=$dest
+case "$installed_dir" in /*) ;; *) installed_dir=$(pwd -P)/$installed_dir ;; esac
+record_binary "$installed_dir/karma"
+if grep -q '"state":"started"' "$work/out"; then
+    cat "$work/out"
+    exit 0
+fi
 # This build was installed already and the server runs it, so karma changed nothing.
 current=; ! grep -q '"state":"up to date"' "$work/out" || current=1
 [ -n "$current" ] || [ "$n" = 5 ] || tick "$detail"
-if [ -z "$first$current" ]; then
+if [ -z "$first" ] && grep -q '"restarted":false' "$work/out" && grep -q '"runtime_version":' "$work/out"; then
+    n=5 title='Keep sessions running'
+    retained=$(sed -n 's/.*"runtime_version":"\([^"]*\)".*/\1/p' "$work/out")
+    tick "Runtime $retained retained; agents kept running"
+elif [ -z "$first$current" ]; then
     n=5 title=$after
     resumed=$(tr '{' '\n' < "$work/out" | sed -n 's/.*"session":"\([^"]*\)".*/\1/p' | sort -u | wc -l | tr -d ' ')
     case "$resumed" in
