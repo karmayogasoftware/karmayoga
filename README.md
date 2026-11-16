@@ -18,12 +18,6 @@ On Windows, Karma Yoga CLI runs through WSL2. Open PowerShell as administrator, 
 
 Check that it installed with `karma --version`.
 
-You can also have your agent install it. Paste this into Claude Code, Codex or Pi.
-
-```text
-Go to karmayogaapp.com/agent, install the Karma Yoga CLI and follow the steps to open inside a Karma Yoga session.
-```
-
 <details>
 <summary>Install from GitHub Releases</summary>
 
