@@ -4,14 +4,14 @@ Karma Yoga CLI runs a fleet of Claude Code, Codex and Pi agents in your terminal
 
 ![Karma Yoga session: manager pane on the left, agents on the right](docs/demo.gif)
 
-The full guide is at [getkarmayoga.com/cli](https://getkarmayoga.com/cli/). How it works under the hood, what it sends and where it keeps its files is on [the technical details page](https://getkarmayoga.com/technical-details/).
+The full guide is at [karmayogaapp.com/cli](https://karmayogaapp.com/cli/). How it works under the hood, what it sends and where it keeps its files is on [the technical details page](https://karmayogaapp.com/technical-details/).
 
 ## Install
 
 On macOS and Linux, run the install script.
 
 ```sh
-curl -fsSL https://getkarmayoga.com/install.sh | sh
+curl -fsSL https://karmayogaapp.com/install.sh | sh
 ```
 
 On Windows, Karma Yoga CLI runs through WSL2. Open PowerShell as administrator, run `wsl --install` and restart your computer. Open Ubuntu from the Start menu, choose a username and password, then run the install script inside Ubuntu.
@@ -21,7 +21,7 @@ Check that it installed with `karma --version`.
 You can also have your agent install it. Paste this into Claude Code, Codex or Pi.
 
 ```text
-Go to getkarmayoga.com/agent, install the Karma Yoga CLI and follow the steps to open inside a Karma Yoga session.
+Go to karmayogaapp.com/agent, install the Karma Yoga CLI and follow the steps to open inside a Karma Yoga session.
 ```
 
 <details>
@@ -87,14 +87,14 @@ It runs on macOS (arm64 and x86_64) and on Linux (x86_64 and aarch64). On Window
 Run `karma update`. Once every session is stopped, `karma uninstall` removes it.
 
 **What does it send?**
-Never your code, prompts or conversations, apart from the lines of an unrecognized tool prompt in a crash report. Analytics and crash reports are on by default, and `karma settings set telemetry false` turns them off. The [technical details page](https://getkarmayoga.com/technical-details/) lists everything it sends and where.
+Never your code, prompts or conversations, apart from the lines of an unrecognized tool prompt in a crash report. Analytics and crash reports are on by default, and `karma settings set telemetry false` turns them off. The [technical details page](https://karmayogaapp.com/technical-details/) lists everything it sends and where.
 
 **Where does it keep its files?**
 In `~/.karmayoga`. The conversations stay where Claude Code, Codex and Pi keep them. `karma delete NAME` deletes a stopped session for good and never touches your project folder.
 
 ## Contact
 
-Our website is [getkarmayoga.com](https://getkarmayoga.com). Please send questions and bug reports to [hello@getkarmayoga.com](mailto:hello@getkarmayoga.com), or run `karma feedback --text "What went wrong"`.
+Our website is [karmayogaapp.com](https://karmayogaapp.com). Please send questions and bug reports to [hello@getkarmayoga.com](mailto:hello@getkarmayoga.com), or run `karma feedback --text "What went wrong"`.
 
 ## License
 
