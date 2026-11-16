@@ -1,5 +1,72 @@
 # Changelog
 
+## 0.4.1
+
+- A new session no longer sends `/rename` to its manager on any tool, so the manager hears who it
+  is sooner. A manager can still rename its conversation with the tool's own command.
+- Codex agents in Karma's managed homes use your `~/.claude/CLAUDE.md` as a fallback when no
+  native `AGENTS.md` exists. Existing owned files and native overrides keep precedence. Pi agents
+  receive the file alongside their native rules. Both honor `CLAUDE_CONFIG_DIR` and leave personal
+  files unchanged.
+- The browser and Slack plugins are now beta.
+- `karma browser windows --profile ACCOUNT` lists the profile's live windows and tabs, and
+  `open --profile ACCOUNT --window ID --url URL` opens a new tab in the chosen window.
+- A browser launch reuses Chrome's startup New Tab page instead of leaving an extra blank tab.
+- `karma browser open` warns when it uses the default profile because neither `--profile` nor
+  `--tab` was supplied.
+- Browser consent dismissal now tries reject, then necessary cookies only, without falling back
+  to accept. Use `--prefer accept` to opt in to accepting cookies.
+- Browser inspection reports a detected blocking modal or consent overlay in `blocking_overlay`
+  without dismissing it.
+- Browser argument errors explain that a page URL must follow `--url` and that `wait --state`
+  takes `present` or `absent` with `--selector`.
+- On macOS, `karma browser open --hidden` keeps headed Chrome and its new windows on the Karma
+  Virtual Display, starts the shared display automatically and holds it while the run has tabs.
+- A hidden browser's `wait --human` brings the tab's window to the real screen and restores its
+  bounds when the wait ends. Named-value `login` opens a temporary window on the real screen.
+- Slack help now gives each command its own options and examples, including nested setup,
+  access and outbox commands.
+- `karma slack mentions` searches messages addressed to you, and `karma slack read @HANDLE`
+  reads an existing direct message without opening a new conversation.
+- Slack output to a pipe is one JSON document per command, including failures with an explanation
+  and next action. `--human` keeps readable output when piped.
+- Slack login retries a browser capture runtime failure once using the same dedicated profile,
+  so a completed sign-in can be captured without another window.
+- Browser and Slack sign-in capture failures name the stage that failed without printing captured
+  credentials.
+- Slack channel, people and DM directories apply filters and limits while collecting pages,
+  so a limited read no longer needs to scan the entire directory first.
+- Partial Slack reads return `next_command` with the original selection and continuation cursor.
+  An unread conversation whose details could not be read remains available on the next call.
+- Slack rate limits now pause only the affected API method in that workspace, so unrelated read
+  methods and identity checks can still run.
+- Budget errors during Slack API reads identify the workspace, API method, remaining seconds and
+  retry time, and repeated source errors are grouped with their counts and affected conversations.
+- Slack name lookups and catch-up retries reuse successful read pages for up to five minutes,
+  so retrying the same window can make progress after a rate limit. Action previews and sending
+  still collect fresh evidence.
+- Changing an agent's model waits for its restored input before returning or sending the notice
+  that lets interrupted work continue.
+- Claude Code conversation text that wraps like a menu option no longer makes a tell look blocked
+  when there is no selection hint.
+- Karma notices no longer include a receipt line in the agent's conversation; delivery history
+  still tracks them.
+- `karma agents` uses the same published state as `karma crew status` and shows full model names
+  without shortening them in narrow terminals.
+- `karma usage` shows the start date of the current spending period and labels earlier periods
+  as past periods.
+- A person can run `karma feedback --text "TEXT"` from a terminal outside a session, as a manager
+  already could from its session.
+- `karma init` explains why each tool was left out and gives the install, login or enable command
+  needed to add it.
+- An ambiguous conversation error names the tools to choose from instead of suggesting a flag
+  that the calling command might not accept.
+- When the manager asks which task tracker you use, it recommends `karma tasks`, and installs it
+  once you agree.
+- With telemetry enabled in a configured build, recovered startup waits no longer send failure
+  reports; a failed operation carries the preceding observations in its report.
+- Closing a command's standard error pipe no longer prints a panic or reports a crash.
+
 ## 0.4.0
 
 - Pi is a third agent tool beside Claude Code and Codex, for managers and agents. `karma tools
