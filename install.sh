@@ -66,6 +66,7 @@ pulse() {
             : > "$work/next"
             n=$((n + 1)) title=$after boundary=
         fi
+        completions
         if [ -n "$tty" ]; then
             case $((i % 4)) in 0) frame=◇ ;; 2) frame=◆ ;; *) frame=◈ ;; esac
             line=$($live)
@@ -92,10 +93,25 @@ stop() {
         show "${green}✓${reset}" "$detail"
         n=$((n + 1)) title=$after
     fi
+    completions
 }
 tick() { stop; show "${green}✓${reset}" "$1"; }
-# The session karma restarts now, while it restarts several.
-restarting() { sed -n 's/^Restarting \(.* ([0-9]* of [0-9]*)\)$/\1/p' "$work/err" 2>/dev/null | tail -n 1; }
+# Forward each readiness record once, including records written after the last pulse.
+completions() {
+    [ "$n" = 5 ] && [ -f "$work/err" ] || return 0
+    seen=$(cat "$work/reported" 2>/dev/null) || seen=0
+    sed -n '/^✓ Restarted session /p; /^✗ Session .* did not come back$/p' "$work/err" |
+        (count=0; while IFS= read -r record; do
+            count=$((count + 1))
+            [ "$count" -gt "$seen" ] || continue
+            printf '%s%s\n' "$clear" "$record"
+            printf '%s\n' "$count" > "$work/reported"
+        done)
+}
+# New releases report readiness; retain progress from older releases too.
+restarting() {
+    sed -n 's/^Restarting \(.* ([0-9]* of [0-9]*)\)$/\1/p; s/^✓ \(Restarted session .*\)$/\1/p; s/^✗ \(Session .* did not come back\)$/\1/p' "$work/err" 2>/dev/null | tail -n 1
+}
 megabytes() { set -- "$(($1 / 100000))"; printf '%d.%d' "$(($1 / 10))" "$(($1 % 10))"; }
 size() { wc -c < "$1" | tr -d ' '; }
 # What the archive has of the size the server gave, while the server gave one.
