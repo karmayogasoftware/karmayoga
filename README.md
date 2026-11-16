@@ -87,7 +87,7 @@ It runs on macOS (arm64 and x86_64) and on Linux (x86_64 and aarch64). On Window
 Run `karma update`. Once every session is stopped, `karma uninstall` removes it.
 
 **What does it send?**
-Never your code, prompts or conversations, apart from the lines of an unrecognized tool prompt in a crash report. Analytics and crash reports are on by default, and `karma settings set telemetry false` turns them off. The [technical details page](https://getkarmayoga.com/technical-details/) lists everything it sends and where.
+Never your code, prompts or conversations, apart from the lines of an unrecognized tool prompt in a crash report. Analytics and crash reports are on by default, and `karma settings set telemetry false` turns them off. The [technical details page](https://karmayogaapp.com/technical-details/) lists everything it sends and where.
 
 **Where does it keep its files?**
 In `~/.karmayoga`. The conversations stay where Claude Code, Codex and Pi keep them. `karma delete NAME` deletes a stopped session for good and never touches your project folder.
