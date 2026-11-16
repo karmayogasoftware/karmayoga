@@ -5,7 +5,7 @@ scripts/notices.py writes this file.
 
 kmux is a modified version of tmux 3.8: Karma Yoga changed it, so every kmux file below is part of a changed tmux.
 
-Applies to: kmux 80dbf24d3240 (tmux 3.8 with changes)
+Applies to: kmux ae10efe3a296 (tmux 3.8 with changes)
 
 ~~~~~~~~text
 Copyright (c) Various Authors
