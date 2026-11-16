@@ -8,13 +8,7 @@ The full guide is at [getkarmayoga.com/cli](https://getkarmayoga.com/cli/). How 
 
 ## Install
 
-On macOS and Linux, install with Homebrew.
-
-```sh
-brew install karmayogasoftware/tap/karma
-```
-
-Without Homebrew, run the install script.
+On macOS and Linux, run the install script.
 
 ```sh
 curl -fsSL https://getkarmayoga.com/install.sh | sh
@@ -90,7 +84,7 @@ At least one of Claude Code, Codex or Pi, signed in on your own account. A subsc
 It runs on macOS (arm64 and x86_64) and on Linux (x86_64 and aarch64). On Windows it runs inside WSL2.
 
 **How do I update or uninstall it?**
-Run `karma update`, which upgrades through Homebrew when Homebrew installed it. Once every session is stopped, `karma uninstall` removes it. With Homebrew, `brew uninstall karma` then removes the binary.
+Run `karma update`. Once every session is stopped, `karma uninstall` removes it.
 
 **What does it send?**
 Never your code, prompts or conversations, apart from the lines of an unrecognized tool prompt in a crash report. Analytics and crash reports are on by default, and `karma settings set telemetry false` turns them off. The [technical details page](https://getkarmayoga.com/technical-details/) lists everything it sends and where.
