@@ -88,7 +88,7 @@ In `~/.karmayoga`. The conversations stay where Claude Code, Codex and Pi keep t
 
 ## Contact
 
-Our website is [karmayogaapp.com](https://karmayogaapp.com). Please send questions and bug reports to [hello@getkarmayoga.com](mailto:hello@getkarmayoga.com), or run `karma feedback --text "What went wrong"`.
+Our website is [karmayogaapp.com](https://karmayogaapp.com). Please send questions and bug reports to [hello@karmayogaapp.com](mailto:hello@karmayogaapp.com), or run `karma feedback --text "What went wrong"`.
 
 ## License
 
