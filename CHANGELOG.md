@@ -1,5 +1,88 @@
 # Changelog
 
+## 0.5.1
+
+- `karma update` on a Mac with Karma Yoga.app installed no longer exits with "Karma Yoga.app was not
+  updated" when the release has no app image. It says no app image is available and leaves the app
+  as it is. (karm-ahah)
+- When `karma update` keeps the running runtime, it retries sessions whose last restore had
+  already failed. If one is still down after a successful update, Karma names it and shows the
+  recorded reason. (karm-7gd8)
+- Updating from 0.5.0 to 0.5.1 restarts running sessions.
+
+### Known issues:
+
+- Everything open under 0.4.1 stays open, except what docs/known-issues.md lists as no longer open.
+- A message sent from another Mac to a parked agent is not delivered. Wake the agent on its own Mac
+  first.
+- Link between two Macs hasn't been tested on this release.
+- On an Apple Silicon Mac running a native build of 0.3.4 or older, `karma update` to 0.5.1 stops at
+  the download and leaves your installed CLI and running sessions working. Open a terminal outside
+  Karma and run `curl -fsSL https://karmayogaapp.com/install.sh | sh`. Intel archive installs retry
+  with the `macos-x86_64` archive. (karm-ik49)
+- A tell that Karma couldn't confirm can stay unsubmitted in the agent's composer. Check the pane
+  with `karma agent see NAME` and review `karma crew history --full` before resending. Leave the
+  composer alone if an Enter may already be pending. If the tell is still in the composer when the
+  agent stops, it is cleared without being sent. `karma agent deactivate`, a restart or an update
+  can name it in a warning, but not every time. `karma stop`, `karma pause` and `karma archive`
+  don't name it. `karma crew history --full` keeps its text to send again.
+- `karma agent interrupt` can skip resubmitting a message while another Karma operation is running,
+  and then warns that the message may be unsent. Check the pane with `karma agent see NAME` and
+  review `karma crew history --full` before retrying. Leave the composer alone if an Enter may
+  already be pending.
+- A tell with the same text as one cleared from the composer in the last hour can read unconfirmed
+  though the agent got it. Check the agent with `karma agent see NAME` before you send it again.
+- A tell sent while a message that looks the same is on the agent's screen can read unconfirmed
+  though the agent got it. Check the agent with `karma agent see NAME` before you send it again.
+- A tell sent while an agent is busy can show unconfirmed even after the agent takes it, from its
+  queue or later in a long turn. Check the pane before resending. (karm-j5su, karm-o6sv)
+- A raw /model tell to a Pi agent can read unconfirmed even though Pi opened its model picker.
+  Check the pane before resending. (karm-ex9a)
+- karma audio can lose part of the microphone track on calls where the audio route changes, such as
+  AirPods. A call can split into two recordings if microphone use drops for at least the configured
+  stop debounce (stopDebounceSeconds in ~/.karmayoga/audio/config.json, one second by default) and
+  then resumes. (karm-gc31)
+- When call recording is on, microphone use in any app can trigger a recording by default, except
+  for known dictation and screen recording apps such as Superwhisper and OpenScreen. To exclude
+  another app, add its name to `ignoredClients` in `~/.karmayoga/audio/config.json` and run
+  `karma audio restart`. A nonempty `allowedClients` list restricts which apps can trigger
+  recording. (karm-4stf)
+- After a paste times out, Karma can send Enter to finish submitting the tell. If the reply to that
+  Enter is lost, Karma has up to two seconds to read a record showing that the agent started or
+  queued the tell. If Karma can't read that record in time, the tell can read unconfirmed even though
+  the agent got it. 0.4.1 could report it as delivered. Check the agent with `karma agent see NAME`
+  before you send it again.
+- If Karma's saved tell history is damaged or unreadable, a tell can read unconfirmed if Karma can't
+  finish reading the agent's transcript record in the first two seconds of checking. That can happen
+  even when the agent recorded the tell within those two seconds and 0.4.1 would have reported it as
+  delivered. Check the agent with `karma agent see NAME` before you send it again.
+- Before restarting a whole session, including during an update, Karma skips recovery for notices it
+  records before trying to deliver them. A notice still in the composer when the agent stops can be
+  discarded. Check the pane with `karma agent see NAME` before restarting or updating. 0.4.1 also
+  skipped recovery for these notices.
+- During a whole-session restart, including one during an update, Karma can press Enter again for a
+  newer tell with the same text as an older one if it has queued the first Enter but has yet to save
+  that result. If a prompt opens between the two keypresses, the second Enter can answer it. This
+  could also happen in 0.4.1. During the restart, Karma can also submit a draft you typed yourself
+  if it matches an older tell.
+- Pi hooks outside the TUI have no terminal Escape input; commands use their configured timeout
+  (60 seconds by default). In the TUI, Karma uses Pi's native terminal-input listener to cancel
+  idle prompt hooks, before Pi has a run signal; running hooks use Pi's abort signal.
+- Restarting Pi refreshes Karma's owned extension. A legacy saved launch whose owned resource
+  is missing, changed or unidentifiable fails naming Pi before stopping the agent; recreate it.
+  Personal extensions and the old resource are left untouched. Running processes keep their
+  loaded extension until restart. Older Pi managers can still report another agent's conversation
+  as open; stop and start that session to refresh every Pi process before restarting or waking workers.
+- Project trust in Pi applies to the whole process. By default, Karma launches Pi with `--approve`,
+  which loads the agent folder's `.pi` settings.json, mcp.json, extensions, skills, prompts, themes,
+  SYSTEM.md and APPEND_SYSTEM.md, installs the missing packages named in that settings.json, and
+  loads the `.agents/skills` folder of every ancestor up to the git root (up to the filesystem root
+  when no git folder is above). It wins over a saved "Do not trust", a `defaultProjectTrust` of
+  "never" and any `project_trust` extension decision, and writes nothing to Pi's `trust.json`. Pi
+  has no trust for the working folder alone.
+- For sessions created with `--no-project-code`, Karma uses `--no-approve` to skip the project's
+  settings, MCP servers, extensions and packages.
+
 ## 0.5.0
 
 ### Tells:
