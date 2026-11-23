@@ -4,7 +4,7 @@ Karma Yoga CLI runs a fleet of Claude Code, Codex and Pi agents in your terminal
 
 ![Karma Yoga session: manager pane on the left, agents on the right](docs/demo.gif)
 
-The full guide is at [karmayogaapp.com/cli](https://karmayogaapp.com/cli/). How it works under the hood, what it sends and where it keeps its files is on [the technical details page](https://karmayogaapp.com/technical-details/).
+The full guide is at [karmayogaapp.com/cli](https://karmayogaapp.com/cli/).
 
 ## Install
 
@@ -81,7 +81,7 @@ It runs on macOS (arm64 and x86_64) and on Linux (x86_64 and aarch64). On Window
 Run `karma update`. Once every session is stopped, `karma uninstall` removes it.
 
 **What does it send?**
-Never your code, prompts or conversations, apart from the lines of an unrecognized tool prompt in a crash report. Analytics and crash reports are on by default, and `karma settings set telemetry false` turns them off. The [technical details page](https://karmayogaapp.com/technical-details/) lists everything it sends and where.
+Never your code, prompts or conversations, apart from the lines of an unrecognized tool prompt in a crash report. Analytics and crash reports are on by default, and `karma settings set telemetry false` turns them off.
 
 **Where does it keep its files?**
 In `~/.karmayoga`. The conversations stay where Claude Code, Codex and Pi keep them. `karma delete NAME` deletes a stopped session for good and never touches your project folder.
