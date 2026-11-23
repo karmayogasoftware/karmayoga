@@ -14,13 +14,13 @@ record_binary() {
         printf '%s\n' 'Warning: the Karma Yoga CLI location could not be recorded. The app will try its standard binary paths.' >&2
     fi
 }
-usage='Usage: curl -fsSL https://getkarmayoga.com/install.sh | sh -s -- [--dev]'
-releases=https://get.getkarmayoga.com
+usage='Usage: curl -fsSL https://karmayogaapp.com/install.sh | sh -s -- [--dev]'
+releases=https://get.karmayogaapp.com
 suffix=
 init='karma init'
 for arg in "$@"; do
     case "$arg" in
-        --dev) releases=https://dev.getkarmayoga.com; suffix=-debug ;;
+        --dev) releases=https://dev.karmayogaapp.com; suffix=-debug ;;
         -h|--help) echo "$usage"; exit 0 ;;
         *) echo "$usage" >&2; exit 1 ;;
     esac
@@ -33,17 +33,8 @@ if [ -n "${KARMA_SESSION_ID:-}" ] && [ -n "${KMUX:-}" ] && [ -n "${TMUX_PANE:-}"
     cli=$(command -v karma) || cli=
     [ -x "$cli" ] || cli=${KARMA_INSTALL_DIR:-$HOME/.local/bin}/karma
     if [ -f "$cli" ] && [ -x "$cli" ] && "$cli" crew status --json >/dev/null 2>&1; then
-        resolved=$cli
-        while [ -L "$resolved" ]; do
-            link=$(readlink "$resolved") || break
-            case "$link" in /*) resolved=$link ;; *) resolved=$(dirname "$resolved")/$link ;; esac
-        done
-        resolved=$(CDPATH= cd -P -- "$(dirname "$resolved")" && pwd)/$(basename "$resolved")
-        case "$suffix:$resolved" in
-            -debug:*/Cellar/karma/*/bin/karma) ;; # The installer makes a separate dev install.
-            *) record_binary "$(CDPATH= cd -- "$(dirname "$cli")" && pwd)/karma"
-               exec "$cli" update "$@" --yes ;;
-        esac
+        record_binary "$(CDPATH= cd -- "$(dirname "$cli")" && pwd)/karma"
+        exec "$cli" update "$@" --yes
     fi
 fi
 # On a terminal each step pulses in place until it is done; elsewhere it is one plain line once done.
@@ -156,7 +147,7 @@ case "$(uname -s)" in
     MINGW*|MSYS*|CYGWIN*) fail 'On Windows, install Karma Yoga CLI inside WSL2 using the Linux installer.' ;;
     *) fail 'Karma Yoga CLI supports macOS and Linux. On Windows, install it inside WSL2.' ;;
 esac
-[ "$releases" != https://dev.getkarmayoga.com ] || [ "$platform" = macos ] || fail 'Karma Yoga CLI dev builds are available on macOS only.'
+[ "$releases" != https://dev.karmayogaapp.com ] || [ "$platform" = macos ] || fail 'Karma Yoga CLI dev builds are available on macOS only.'
 tick "$about"
 begin 2 'Download release' progress
 name="karma-$version-$platform-$arch$suffix.tar.gz"
@@ -177,7 +168,7 @@ if command -v sha256sum >/dev/null 2>&1; then
 else
     actual=$(shasum -a 256 "$work/archive")
 fi
-[ "${actual%% *}" = "$digest" ] || fail 'The Karma Yoga CLI download failed its checksum check. Run the installer again. If it happens again, contact hello@getkarmayoga.com.'
+[ "${actual%% *}" = "$digest" ] || fail 'The Karma Yoga CLI download failed its checksum check. Run the installer again. If it happens again, contact hello@karmayogaapp.com.'
 [ "$(tar -tzf "$work/archive" 2>/dev/null)" = karma ] || fail 'The Karma Yoga CLI release archive is invalid.'
 tar -xzf "$work/archive" -C "$work" 2>/dev/null || fail 'Could not extract Karma Yoga CLI.'
 [ -f "$work/karma" ] && [ ! -L "$work/karma" ] || fail 'The Karma Yoga CLI release binary is invalid.'
