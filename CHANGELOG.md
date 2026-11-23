@@ -1,5 +1,334 @@
 # Changelog
 
+## 0.5.0
+
+### Tells:
+
+- After a usage limit or a failed turn, Karma can submit some of its own unconfirmed tells and
+  notices from the last hour that it finds alone in a ready composer.
+- Karma reports a new tell as undelivered only when nothing was pasted. One that may have been
+  pasted but can't be confirmed is recorded as failed, and the history table shows it as
+  unconfirmed.
+- When a tell to `@all` can't be confirmed for every agent, Karma names the agents to tell again and
+  those to check first without resending.
+- After a tell to a Codex agent, Karma gives the transcript time to show the message when the screen
+  is clipped or being redrawn. For any agent, it also doesn't press Enter again during that send
+  once the session server has queued Enter after the paste timed out.
+- Karma can press Enter again when Claude Code holds a pasted tell with image attachments in its
+  composer, unless the session server already queued Enter after that paste timed out.
+- With `karma agent interrupt @all`, Karma tries to interrupt every busy agent except the manager
+  before it tries to resubmit any of their messages.
+- A tell that timed out in the send queue before anything was written is sent once more. If the
+  reply to a send is lost, Karma doesn't send again.
+- Local tells usually need no separate client process, and Karma commands skip a macOS startup step.
+  Both steps could hang in Codex's sandbox.
+- A plain tell leaves a person who is scrolling back where they were reading, unless Karma first has
+  to clear a stuck rename.
+- When a blocking Claude Code permission prompt cuts off a command, the manager's notice and
+  `karma agent see` show the full command or its possible matches, if the transcript has them.
+- `karma crew history` names the recipient of each message, in text and as `recipient` in JSON.
+- A process left over from an earlier session server can no longer act as the agent that now has its
+  pane ID.
+- A failed wake in `karma --json crew tell` or `karma --json agent reactivate` gives a stable error
+  code, as does starting a session that is already running.
+- More tells sent to a busy Claude agent read delivered once Claude queues or starts them, and Karma
+  still doesn't report one as delivered before Claude has taken it. (karm-cihr)
+
+### Sessions and agents:
+
+- The pause key and the pause cell in the session bar are in release builds. The default key is
+  Ctrl+6, shown as `⌃^`, and `keys.pause` changes it.
+- If Ctrl+6 is already bound and `keys.pause` is unset, or the saved pause key is invalid or is also
+  another action's key, Karma picks a free key for pause. It refuses a key change that would give
+  pause and another action the same key.
+- The help of `karma agent model` and `karma agent restart` says when an agent keeps its
+  conversation, starts an empty one or is refused.
+- When a local `karma update`, `karma restart`, `karma restart --agent` or `karma agent restart`
+  interrupts an agent and brings it back, Karma tries to resume a goal that was still active when it
+  stopped the agent, in the same conversation. A later `karma start` and recovery after an
+  unexpected stop don't resume goals this way. Neither does an update from 0.3.4 or earlier, which
+  the older Karma carries out.
+- Karma doesn't send that resume into a draft. It tries to warn the manager when the goal may still
+  be paused or couldn't be read before the stop.
+- Setting the same text on a paused Codex goal with `karma agent goal` resumes that goal in place
+  instead of replacing it, unless `--keep` is given.
+- An agent in auto permissions is refused a Claude model that the catalog lists without auto mode,
+  and `karma models` marks those models.
+- `karma agent goal` reads a Claude goal that was set during a turn, and setting one on a busy
+  Claude agent is confirmed by Claude's own record.
+- Before Karma pauses a stalled goal, it checks the agent's screen and leaves the goal alone if a
+  different one is shown.
+- A stalled goal of an agent that is waiting for a reply pauses without a notice to the manager.
+- `karma agent reactivate` still starts an agent whose saved conversation ended in a failed turn,
+  and gives that error in `warning`.
+- For a person, `karma crew status` prints the name and reason of each agent with an error below the
+  table, when a reason is known.
+- Status shows the sign-in advice when a Claude Code login has reached its time limit.
+- Agent status shows the effort Codex used in its latest observed turn.
+- An interrupted Codex turn no longer reads as a failed turn.
+- `karma agents` keeps session, agent, tool and activity whole when it narrows the table to fit a
+  terminal.
+- `karma agent see` fills a Pi agent's view with earlier conversation above the live screen.
+- Claude Code no longer asks you to trust the session workspace each time an agent starts.
+- Restarting a Codex agent no longer adds another copy of its skill settings to the launch
+  arguments.
+- An agent that a session stop interrupted is told that the session stopped when it comes back. An
+  idle agent, or a manager that stopped its own session, gets no notice.
+- Restores retry some interrupted state reads. After such a failure, a continuation notice is sent
+  again only if none of it could have been pasted.
+- Continuation notices after a restart look up the agent's last message in an index when they can,
+  instead of reading the whole history.
+- The watcher reuses transcript, screen, history and settings data that has not changed, so it
+  repeats less work with many agents.
+- A low disk or memory warning returns after free space has recovered and dropped again, or when it
+  falls by another fifth since the last warning.
+- `karma machine --cleanup` reports the space used in known workspace and worktree folders as
+  protected. Caches there that can be rebuilt still count as space you can free.
+- The manager skill explains `karma kmux` for reading clients, panes and scrollback. A refused
+  `list-panes -a` points to `list-panes -s`.
+
+### Usage:
+
+- `karma usage` groups subscription limits by window, with the pace and when each is projected to
+  run out. It also shows estimated cost and any Codex credit resets.
+- Without an agent name, `karma usage --json` shares a core set of fields across roles, including a
+  verdict on how much to run. An agent sees only its own account and row, and scripts that read the
+  old shape need an update.
+- When a saved report can be used, `karma usage` shows it at once with the age of its readings and
+  refreshes it in the background once it is stale. `--refresh` asks for a new one.
+- If only a Codex credit reset lookup fails during a refresh, `karma usage` still uses the fresh
+  report and warns that some credit reset requests failed. JSON output includes that warning as
+  `refresh_error`.
+- When the current roster for a session in the report can't be read, `karma usage` can still report
+  the transcript totals it finds and marks them incomplete.
+- Built-in prices are normally refreshed from models.dev at each release. Pi agents on Amazon
+  Bedrock or OpenAI are priced by the model in the transcript when its price is known.
+- When a usage limit menu blocks a Claude agent and the account has room again, Karma chooses Stop
+  and tells the agent to continue. It never chooses usage credits.
+- A manager can choose Stop on the usage limit menu of another session's agent with
+  `karma crew tell NAME --session S --key N`.
+- `karma models` shows up to ten models for each tool, including the default, and `--all` shows
+  every one. JSON has no limit of ten, and without `--all` it leaves out hidden models other than
+  the default.
+- `karma models` answers from its saved list at once and refreshes an old list in the background.
+- Claude's model list no longer times out when Claude Code keeps running after it has answered.
+- By default, Pi on Amazon Bedrock hides duplicate regional copies and models the AWS account is
+  known not to be able to invoke, except the default model. An unfinished check keeps the saved
+  list.
+- A person's plain `karma usage` covers the last 30 days. `--day`, `--week`, `--month`, `--year`,
+  `--hours` and `--since` choose another period, and each table names its range. An agent's own
+  usage still covers the last 24 hours by default. (karm-tzaz)
+- For a person, `karma usage --all-sessions` lists every running and saved session when no session
+  or agent is selected. (karm-tzaz)
+- The estimated cost table prices every tool at list price, including accounts on a plan. When a
+  tool reports its own billed spend, the table shows it in a Billing cycle column. (karm-hdiq)
+- `karma usage` no longer ends with a line for each tool saying when it was read. (karm-aiqn)
+- `karma usage` shows tokens and cost for a tool's parked agents and current builds, which it
+  couldn't read before. (karm-dxh3)
+- `karma models` shows list prices for the models a tool serves from other providers. A blank USAGE
+  now comes with a note when the tool's own pricing has no list price. (karm-so4f)
+
+### Feedback:
+
+- `karma feedback` has five commands: `send`, `show`, `note`, `close` and `reopen`. A person can
+  send a report and follow it by number, and so can a manager with the person's permission.
+- `karma feedback --text TEXT` is removed, so use `karma feedback send TEXT` to send a report. The
+  old form's error names the new command.
+- `karma feedback` lists the fixes waiting for your test and counts other reports. `--all`,
+  `--open`, `--limit` and `--page` choose what it lists.
+- When an update restarts sessions, the notice to a returning manager can list fixes that are ready
+  to retest. Feedback notices no longer appear in the session bar.
+- `karma feedback show` says why a report was closed and names the original of a duplicate. A won't
+  fix needs no reply, and you can reopen it with your reason.
+- A machine can send up to 100 new reports a day, and a refusal over the limit says when it resets.
+  If the same text was saved in this Karma home within the past hour, sending it again returns the
+  saved report without another upload.
+- When the feedback service limits requests, `karma feedback show` waits up to a minute and tries
+  each limited page once more.
+- Karma homes on one Mac share a feedback identity when Karma can read the hardware ID. A copied
+  home starts a fresh report list when it detects other hardware.
+- The log attached to a feedback report cuts the pane text that Karma's send warnings quote.
+
+### Link:
+
+- `karma auth` signs this computer in to a Karma account, shows its status and lists or signs out
+  the account's devices. `karma auth login --device` signs in a computer without a browser.
+- If an offline sign-out left a saved sign-in on this Mac, signing in here again can replace it
+  instead of adding another machine.
+- Link is on in release builds. The account service allows more than one Mac on an account. When
+  you are signed in, use `karma link ls` to see other Macs listed by the account and any known
+  connection status. Use `karma link rename` to rename this Mac.
+- Use `karma link ls --details` to see cached connection details for each machine.
+- Link tries to connect Macs on the same account directly. If that fails, it can try an encrypted
+  relay.
+- When Link has lists from several Macs, `karma ls` and `karma agents` group the results by Mac.
+  `karma ls` can show when a Mac became unreachable and which paths Link tried.
+- If no local session matches, `karma open NAME` looks for that name on linked Macs. When it finds
+  just one reachable match and no other match, it opens it. Otherwise it lists any known matching
+  `--host` commands.
+- On a connected Mac, `--host` can select a Mac for a plain tell, an interrupt of one agent, marking
+  a message read, or starting, stopping or restarting a whole session.
+- When a session you are viewing over Link pauses itself, the remote viewer can show the paused
+  session menu.
+- Link retries stale connections and checks for network changes while retrying. If the sign-in has
+  ended, `karma doctor` and `karma link ls` tell you to run `karma auth login`.
+- Release builds can pair machines with `karma link add` and `karma link accept`, and manage those
+  links with `karma link alias` and `karma link rm`. If SSH setup needs to install Karma on the
+  other machine, it tries the release channel (0.5.0 or later), the RC channel (0.5.0-rc.2 or
+  later), then a compatible dev build on macOS.
+- A person's tell over Link uses the receiving Mac's user name when Karma can read it.
+- A linked tell can report undelivered and give the reason when the receiving Mac refuses it before
+  pasting. For a manager's tell, this includes a stopped session, a paused session that could not
+  start, or a manager that could not start. For a person's `--host` tell, this includes an agent
+  that exited, restarted or refused input, or a session or agent that changed after lookup.
+
+### Setup and update:
+
+- The installer is at `https://karmayogaapp.com/install.sh`, and the support address is
+  hello@karmayogaapp.com.
+- The Homebrew install path is retired, so `karma update` in a Homebrew copy can't install 0.5.0.
+  Run the installer from a terminal outside Karma and make sure the install directory
+  (`~/.local/bin` by default) comes before Homebrew's bin directory on your PATH.
+- On an Apple Silicon Mac running a native build of 0.3.4 or older, `karma update` to 0.5.0 stops at
+  the download and leaves your installed CLI and running sessions working. Open a terminal outside
+  Karma and run `curl -fsSL https://karmayogaapp.com/install.sh | sh`. Intel archive installs retry
+  with the `macos-x86_64` archive. (karm-ik49)
+- First setup stays unfinished and exits 1 when no chosen tool's sign-in could be checked, and
+  prints the command to rerun from a desktop terminal.
+- `karma tools enable` reports failure when it cannot check a sign-in, and prints a failed test's
+  reason on one line.
+- If Anthropic refuses the API key set in the environment and setup has no verified native sign-in
+  to use, it tells you to fix or unset that key.
+- The first `karma init` reuses a test start that `karma tools enable` passed if the checks and the
+  model still match.
+- `karma tools` no longer shows a sign-in as missing when it finishes during the check.
+- SIGTERM gives `karma new`, `karma init`, `karma doctor`, plain `karma tools`, and its install,
+  enable and disable commands time to stop what they started.
+- `karma update` waits for a restarted agent's conversation before it reports that the agent did not
+  come back.
+- When no copy of an installed tool passes its version check, `karma tools` and its install, enable
+  and login commands show the path and the error instead of reporting the tool as missing.
+  `karma doctor` does the same for a disabled tool.
+- An unchanged warning about `config.toml` is logged once instead of by every command.
+
+### Plugins:
+
+- `karma tasks search` puts exact IDs first, then unfinished tasks. Within each status, a title with
+  every search word ranks above body and comment matches, and a search for owners also finds owner.
+- `karma code-review readme` prints text in a pipe, and JSON with `--json`.
+- `karma code-review status` gives a count of findings to recheck, names pull requests whose GitHub
+  history is cut off, and no longer says head unknown for an unreviewed one.
+- `karma code-review show` names who raised each finding in a joint review. `amend` can correct one
+  finished report while the other reviewer works.
+- A failed GitHub read in `karma code-review` includes GitHub's answer when one was returned.
+- When an analyzer fails, `karma code-quality` shows the first nonblank line of its error output, if
+  there is one. It also asks analyzers not to use color.
+- `karma backup` is now an opt-in alpha plugin. If you already run backups, run
+  `karma plugins install backup` after updating to resume them. `karma restore` and `karma secrets`
+  work without the plugin.
+
+### Audio:
+
+- When call recording is on, microphone use in any app can trigger a recording by default, except
+  for a built in list of dictation and screen recording apps. A nonempty `allowedClients` list
+  restricts which apps can trigger recording. (karm-4stf)
+- A new audio config records the built-in microphone and falls back to the default input. An
+  existing microphone setting is unchanged. (karm-lohe)
+- `karma audio restart` reloads the current config and restarts the recorder if it was running or
+  enabled. `karma audio reset` restores factory settings, keeping any existing retention settings.
+  If there is an existing config, reset backs it up beside the config file and prints the backup
+  path. Both keep the recording gate as it was and refuse while a recording or other audio work is
+  in progress. (karm-3i0j)
+- `karma audio on` shows the model download's progress. (karm-rzoa)
+- The audio cell in the bottom bar shows a circle instead of a microphone: a dim circle and "off"
+  when recording is off, and a red circle while karma audio waits for a call. During a recording it
+  alternates red and dim beside the elapsed time. A failed check can show a yellow circle with a short
+  reason; karma audio status says more. (karm-wh8y, karm-yrls)
+- With dictation on, the mic now appears at the right of pane titles, including in narrow panes.
+  (karm-3467)
+- `karma audio --help` explains dictation: F9 or the mic starts and stops it, and F10 or a right
+  click on the mic shows saved results. (karm-0tr6)
+- `karma audio acceptance` passes when the only reason the check gives is informational. A check
+  that fails or warns, or a transcript without the phrase, still fails it. (karm-c350)
+
+### Docs and skills:
+
+- The manager skill changed.
+- Help changed: karma, karma audio, karma audio reset, karma audio restart, karma feedback, karma feedback send, karma feedback show, karma feedback note, karma feedback close, karma feedback reopen, karma init, karma ls, karma models, karma new, karma tools, karma tools install, karma tools login, karma tools enable, karma tools disable, karma update, karma usage, karma vdisplay, karma vdisplay status, karma vdisplay on, karma vdisplay off, karma vdisplay capture, karma vdisplay windows, karma vdisplay tree, karma vdisplay click, karma vdisplay move, karma vdisplay drag, karma vdisplay scroll, karma vdisplay type, karma vdisplay key, karma agent create, karma agent model, karma agent restart, karma audio acceptance, karma audio access, karma audio access status, karma audio devices, karma audio export, karma audio list, karma audio logs, karma audio off, karma audio on, karma audio probe, karma audio readme, karma audio recover-spool, karma audio repair, karma audio salvage, karma audio selftest, karma audio status, karma audio transcribe, karma audio transcripts, karma audio transcripts get, karma audio transcripts latest, karma audio transcripts list, karma audio uninstall, karma audio verify, karma code-review amend, karma tasks, karma tasks comment, karma tasks file, karma tasks list, karma tasks ready, karma tasks report, karma tasks search, karma tasks show.
+
+### Known issues:
+
+- Everything open under 0.4.1 stays open, except what docs/known-issues.md lists as no longer open.
+- A message sent from another Mac to a parked agent is not delivered. Wake the agent on its own Mac
+  first.
+- Link between two Macs hasn't been tested on this release.
+- On an Apple Silicon Mac running a native build of 0.3.4 or older, `karma update` to 0.5.0 stops at
+  the download and leaves your installed CLI and running sessions working. Open a terminal outside
+  Karma and run `curl -fsSL https://karmayogaapp.com/install.sh | sh`. Intel archive installs retry
+  with the `macos-x86_64` archive. (karm-ik49)
+- A tell that Karma couldn't confirm can stay unsubmitted in the agent's composer. Check the pane
+  with `karma agent see NAME` and review `karma crew history --full` before resending. Leave the
+  composer alone if an Enter may already be pending. If the tell is still in the composer when the
+  agent stops, it is cleared without being sent. `karma agent deactivate`, a restart or an update
+  can name it in a warning, but not every time. `karma stop`, `karma pause` and `karma archive`
+  don't name it. `karma crew history --full` keeps its text to send again.
+- `karma agent interrupt` can skip resubmitting a message while another Karma operation is running,
+  and then warns that the message may be unsent. Check the pane with `karma agent see NAME` and
+  review `karma crew history --full` before retrying. Leave the composer alone if an Enter may
+  already be pending.
+- A tell with the same text as one cleared from the composer in the last hour can read unconfirmed
+  though the agent got it. Check the agent with `karma agent see NAME` before you send it again.
+- A tell sent while a message that looks the same is on the agent's screen can read unconfirmed
+  though the agent got it. Check the agent with `karma agent see NAME` before you send it again.
+- A tell sent while an agent is busy can show unconfirmed even after the agent takes it, from its
+  queue or later in a long turn. Check the pane before resending. (karm-j5su, karm-o6sv)
+- A raw /model tell to a Pi agent can read unconfirmed even though Pi opened its model picker.
+  Check the pane before resending. (karm-ex9a)
+- karma audio can lose part of the microphone track on calls where the audio route changes, such as
+  AirPods. A call can split into two recordings if microphone use drops for at least the configured
+  stop debounce (stopDebounceSeconds in ~/.karmayoga/audio/config.json, one second by default) and
+  then resumes. (karm-gc31)
+- When call recording is on, microphone use in any app can trigger a recording by default, except
+  for known dictation and screen recording apps such as Superwhisper and OpenScreen. To exclude
+  another app, add its name to `ignoredClients` in `~/.karmayoga/audio/config.json` and run
+  `karma audio restart`. A nonempty `allowedClients` list restricts which apps can trigger
+  recording. (karm-4stf)
+- After a paste times out, Karma can send Enter to finish submitting the tell. If the reply to that
+  Enter is lost, Karma has up to two seconds to read a record showing that the agent started or
+  queued the tell. If Karma can't read that record in time, the tell can read unconfirmed even though
+  the agent got it. 0.4.1 could report it as delivered. Check the agent with `karma agent see NAME`
+  before you send it again.
+- If Karma's saved tell history is damaged or unreadable, a tell can read unconfirmed if Karma can't
+  finish reading the agent's transcript record in the first two seconds of checking. That can happen
+  even when the agent recorded the tell within those two seconds and 0.4.1 would have reported it as
+  delivered. Check the agent with `karma agent see NAME` before you send it again.
+- Before restarting a whole session, including during an update, Karma skips recovery for notices it
+  records before trying to deliver them. A notice still in the composer when the agent stops can be
+  discarded. Check the pane with `karma agent see NAME` before restarting or updating. 0.4.1 also
+  skipped recovery for these notices.
+- During a whole-session restart, including one during an update, Karma can press Enter again for a
+  newer tell with the same text as an older one if it has queued the first Enter but has yet to save
+  that result. If a prompt opens between the two keypresses, the second Enter can answer it. This
+  could also happen in 0.4.1. During the restart, Karma can also submit a draft you typed yourself
+  if it matches an older tell.
+- Pi hooks outside the TUI have no terminal Escape input; commands use their configured timeout
+  (60 seconds by default). In the TUI, Karma uses Pi's native terminal-input listener to cancel
+  idle prompt hooks, before Pi has a run signal; running hooks use Pi's abort signal.
+- Restarting Pi refreshes Karma's owned extension. A legacy saved launch whose owned resource
+  is missing, changed or unidentifiable fails naming Pi before stopping the agent; recreate it.
+  Personal extensions and the old resource are left untouched. Running processes keep their
+  loaded extension until restart. Older Pi managers can still report another agent's conversation
+  as open; stop and start that session to refresh every Pi process before restarting or waking workers.
+- Project trust in Pi applies to the whole process. By default, Karma launches Pi with `--approve`,
+  which loads the agent folder's `.pi` settings.json, mcp.json, extensions, skills, prompts, themes,
+  SYSTEM.md and APPEND_SYSTEM.md, installs the missing packages named in that settings.json, and
+  loads the `.agents/skills` folder of every ancestor up to the git root (up to the filesystem root
+  when no git folder is above). It wins over a saved "Do not trust", a `defaultProjectTrust` of
+  "never" and any `project_trust` extension decision, and writes nothing to Pi's `trust.json`. Pi
+  has no trust for the working folder alone.
+- For sessions created with `--no-project-code`, Karma uses `--no-approve` to skip the project's
+  settings, MCP servers, extensions and packages.
+
 ## 0.4.1
 
 - A new session no longer sends `/rename` to its manager on any tool, so the manager hears who it
