@@ -67,7 +67,7 @@ Press Ctrl-\ to detach, or close the terminal, and the work keeps going. `karma 
 - `karma usage` shows your account limits, when they reset and what each agent used. `karma machine` shows CPU, memory and disk.
 - `karma plugins list` shows the plugins you can install, such as tasks. A new setup starts with none.
 - `karma update` installs the latest release and keeps your agents on their conversations.
-- `karma feedback --text "What went wrong"` sends us a problem report.
+- `karma feedback send "What went wrong"` sends us a problem report.
 
 ## FAQ
 
@@ -88,7 +88,7 @@ In `~/.karmayoga`. The conversations stay where Claude Code, Codex and Pi keep t
 
 ## Contact
 
-Our website is [karmayogaapp.com](https://karmayogaapp.com). Please send questions and bug reports to [hello@karmayogaapp.com](mailto:hello@karmayogaapp.com), or run `karma feedback --text "What went wrong"`.
+Our website is [karmayogaapp.com](https://karmayogaapp.com). Please send questions and bug reports to [hello@karmayogaapp.com](mailto:hello@karmayogaapp.com), or run `karma feedback send "What went wrong"`.
 
 ## License
 
